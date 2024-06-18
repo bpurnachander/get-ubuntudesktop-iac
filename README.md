@@ -2,7 +2,7 @@
 
 This project aims to automate the provisioning and configuration of infrastructure and software for setting up a remote desktop environment using Terraform, Ansible, Jenkins, and Docker.
 
-## Key Steps
+## The process involves the following Key Steps:
 
 1. **Provision Jenkins Server**: Create the necessary infrastructure on Google Cloud Platform (GCP) using Terraform. This includes a Virtual Private Cloud (VPC), a Service Account, and a Virtual Machine (VM) instance configured as a Jenkins server.
 
