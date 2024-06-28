@@ -110,5 +110,33 @@ pipeline {
                 sh 'ansible-playbook -e "target_hosts=$target_hosts" -e "operation=$ansible_action" ansible/master.yaml'
             }
         }
+        stage('Upgrade tomcat Version') {
+             when {
+                expression {
+                    return upgrade_tomcat_verion == 'tomcat'
+                }
+            }
+            steps {
+                script {
+                    def oldVersions = sh(script: "ansible $ansible_hosts -a 'grep apache-tomcat'", returnStdout: true).trim()
+                    
+                    if (oldVersions) {
+                        echo "Found the following Tomcat versions:"
+                        echo oldVersions
+                        
+                        def userInput = input message: 'Do you want to upgrade your tomcat version?', ok: 'Yes'
+                        
+                        
+                        echo "You chose to upgrade to Tomcat version: $tomcat_version"
+                    } else {
+                        sleep(time: 15, unit: 'SECONDS')
+                
+                        sh '''
+                        ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=apply" adq-ubuntu-desktop/ansible/master.yaml
+                        '''
+                    }
+                }
+            }
+        }
     }
 }
