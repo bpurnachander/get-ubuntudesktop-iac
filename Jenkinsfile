@@ -113,7 +113,7 @@ pipeline {
         stage('Upgrade tomcat Version') {
              when {
                 expression {
-                    return upgrade_tomcat_verion == 'tomcat'
+                    return upgrade_software == 'tomcat'
                 }
             }
             steps {
