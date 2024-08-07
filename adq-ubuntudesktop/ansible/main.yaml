@@ -1,19 +1,9 @@
 ---
-- name: Conditionally Include Playbooks
-  become: yes
-  vars:
-    action: "{{ action | default('apply') }}"  # Default to 'apply' if not provided
-
-    playbooks:
-      apply:
-        - playbook_softwares.yml
-        - playbook_services.yml
-        - playbook_deployment.yml
-      destroy:
-        - playbook_destroy.yml
-
-  tasks:
-    - name: Include relevant playbooks based on action
-      include_tasks: "{{ item }}"
-      loop: "{{ playbooks[action] }}"
-      when: action in playbooks
+- import_playbook: playbook_softwares.yml
+  when: action == apply
+- import_playbook: playbook_services.yml
+  when: action == apply
+- import_playbook: playbook_deployment.yml
+  when: action == apply
+- import_playbook: playbook_destroy.yml
+  when: action == destroy
