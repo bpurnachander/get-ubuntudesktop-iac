@@ -8,6 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+                buildName "${ENV}-#${env.BUILD_NUMBER}"
                 git branch: 'main', url: 'https://github.com/bpurnachander/get-ubuntudesktop-iac.git'
             }
         }
