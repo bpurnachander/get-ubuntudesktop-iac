@@ -7,30 +7,30 @@
       role: java-d
       tags: java-d
 
-    - name: Remove Python
-      apt:
-        name: python3
-        state: absent
-      tags: 
-        - python
+    # - name: Remove Python
+    #   apt:
+    #     name: python3
+    #     state: absent
+    #   tags: 
+    #     - python
 
-    - name: Remove Notepad++
-      apt:
-        name: uninstall
-        state: absent
-      tags: 
-        - uninstall
+    # - name: Remove Notepad++
+    #   apt:
+    #     name: uninstall
+    #     state: absent
+    #   tags: 
+    #     - uninstall
 
-    - name: Remove Tomcat
-      apt:
-        name: tomcat10
-        state: absent
-      tags: 
-        - tomcat
+    # - name: Remove Tomcat
+    #   apt:
+    #     name: tomcat10
+    #     state: absent
+    #   tags: 
+    #     - tomcat
 
-    - name: Remove Ubuntu Desktop Environment
-      apt:
-        name: ubuntu-desktop
-        state: absent
-      tags: 
-        - ubuntudesktop
+    # - name: Remove Ubuntu Desktop Environment
+    #   apt:
+    #     name: ubuntu-desktop
+    #     state: absent
+    #   tags: 
+    #     - ubuntudesktop
