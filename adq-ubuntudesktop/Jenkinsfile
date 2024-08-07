@@ -9,10 +9,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    // Checkout from Git repository
                     git branch: 'main', url: 'https://github.com/bpurnachander/get-ubuntudesktop-iac.git'
                     
-                    // Set build name and description
                     currentBuild.displayName = "ENV: ${ENV} - #${env.BUILD_NUMBER}"
                     currentBuild.description = """\
 TERRAFORM: ${TERRAFORM}
