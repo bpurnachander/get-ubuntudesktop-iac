@@ -20,7 +20,7 @@
 
       destroy:
 
-        - destroy.yml
+        - playbook_destroy.yml
  
   tasks:
 
