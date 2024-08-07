@@ -13,7 +13,7 @@ pipeline {
                     git branch: 'main', url: 'https://github.com/bpurnachander/get-ubuntudesktop-iac.git'
                     
                     // Set build name and description
-                    currentBuild.displayName = "${ENV} - #${env.BUILD_NUMBER}"
+                    currentBuild.displayName = "ENV: ${ENV} - #${env.BUILD_NUMBER}"
                     currentBuild.description = """\
 TERRAFORM: ${TERRAFORM}
 TERRAFORM_EXTRA_ARGS: ${TERRAFORM_EXTRA_ARGS}
