@@ -6,6 +6,9 @@
     - name: Apply Java for destroy
       role: java-d
       tags: java-d
+    - name: Apply tomcat for destroy
+      role: tomcat-d
+      tags: tomcat-d
 
     # - name: Remove Python
     #   apt:
