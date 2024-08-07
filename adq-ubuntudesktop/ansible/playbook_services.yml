@@ -1,1 +1,10 @@
+---
+- name: Apply configurations based on group_vars
+  hosts: all
+  
+  roles:
+    - name: Apply notepad++ Installation
+      role: notepad++
+      tags: notepad++
+
 
