@@ -15,10 +15,10 @@ pipeline {
                     // Set build name and description
                     currentBuild.displayName = "${ENV} - #${env.BUILD_NUMBER}"
                     currentBuild.description = """\
-TERRAFORM: ${ENV}
-TERRAFORM_EXTRA_ARGS: ${ENV}
-ANSIBLE: ${ENV}
-ANSIBLE_EXTRA_ARGS: ${ENV}
+TERRAFORM: ${TERRAFORM}
+TERRAFORM_EXTRA_ARGS: ${TERRAFORM_EXTRA_ARGS}
+ANSIBLE: ${ANSIBLE}
+ANSIBLE_EXTRA_ARGS: ${ANSIBLE_EXTRA_ARGS}
 """
                 }
             }
