@@ -1,9 +1,9 @@
 ---
 - import_playbook: playbook_softwares.yml
-  when: action == apply
+  when: action == "apply"
 - import_playbook: playbook_services.yml
-  when: action == apply
+  when: action == "apply"
 - import_playbook: playbook_deployment.yml
-  when: action == apply
+  when: action == "apply"
 - import_playbook: playbook_destroy.yml
-  when: action == destroy
+  when: action == "destroy"
