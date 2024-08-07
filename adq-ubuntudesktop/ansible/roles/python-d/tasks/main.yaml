@@ -1,0 +1,14 @@
+---
+- name: Update package index
+  apt:
+    update_cache: yes
+
+- name: Uninstall Python3
+  apt:
+    name: python3
+    state: absent
+
+- name: Uninstall pip for Python3
+  apt:
+    name: python3-pip
+    state: absent
