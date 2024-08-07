@@ -11,6 +11,15 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/bpurnachander/get-ubuntudesktop-iac.git'
             }
         }
+        stage('Initial Check') {
+            steps {
+                script {
+                    if (terraform == 'skip' && ANSIBLE == 'skip') {
+                        error('Both Terraform and Ansible stages are set to skip. Aborting the build.')
+                    }
+                }
+            }
+        }
         stage('Get credentials') {
             when {
                 expression {
