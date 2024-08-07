@@ -1,6 +1,6 @@
 ---
 
-- hosts: all
+- hosts: adq_ubuntudesktop
 
   become: yes
 
