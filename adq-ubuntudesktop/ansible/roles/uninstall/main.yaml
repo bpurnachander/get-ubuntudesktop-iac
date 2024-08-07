@@ -1,0 +1,2 @@
+- name: Uninstall Notepad++ snap package
+  command: rm -rf /root/snap/notepad-plus-plus
