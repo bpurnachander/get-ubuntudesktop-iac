@@ -1,35 +1,19 @@
 ---
-
-- hosts: adq_ubuntudesktop
-
+- name: Conditionally Include Playbooks
   become: yes
-
   vars:
-
-    action: apply  # Default action; can be overridden from the command line
+    action: "{{ action | default('apply') }}"  # Default to 'apply' if not provided
 
     playbooks:
-
       apply:
-
         - playbook_softwares.yml
-
         - playbook_services.yml
-
         - playbook_deployment.yml
-
       destroy:
-
         - playbook_destroy.yml
- 
+
   tasks:
-
-    - name: Import relevant playbooks based on action
-
-      import_playbook: "{{ item }}"
-
+    - name: Include relevant playbooks based on action
+      include_tasks: "{{ item }}"
       loop: "{{ playbooks[action] }}"
-
-      when: action in ['apply', 'destroy']
-
- 
+      when: action in playbooks
