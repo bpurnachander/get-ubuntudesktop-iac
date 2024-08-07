@@ -1,2 +1,2 @@
 - name: Delete tomcat
-  command: rm -rf /opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.26') }}
+  command: rm -rf /opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.28') }}
