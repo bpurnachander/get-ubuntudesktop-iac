@@ -1,4 +1,4 @@
 ---
 - import_playbook: playbook_softwares.yml
-#import_playbook: playbook_services.yml
-#import_playbook: playbook_deployment.yml
+- import_playbook: playbook_services.yml
+- import_playbook: playbook_deployment.yml
