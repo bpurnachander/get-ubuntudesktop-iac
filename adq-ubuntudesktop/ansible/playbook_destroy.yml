@@ -2,13 +2,10 @@
 - name: Uninstall Java, Python, Notepad++, Tomcat, and Ubuntu Desktop
   hosts: all
   become: yes
-  tasks:
-    - name: Remove Java
-      apt:
-        name: default-jdk
-        state: absent
-      tags: 
-        - java
+  roles:
+    - name: Apply Java for destroy
+      role: java-d
+      tags: java-d
 
     - name: Remove Python
       apt:
