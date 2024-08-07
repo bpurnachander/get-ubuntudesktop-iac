@@ -1,0 +1,15 @@
+- name: Remove Chrome Remote Desktop package
+  apt:
+    name: chrome-remote-desktop
+    state: absent
+
+- name: Remove Ubuntu desktop environment
+  apt:
+    name: ubuntu-desktop
+    state: absent
+    autoremove: yes
+
+- name: Clean up temporary files
+  file:
+    path: /tmp/chrome-remote-desktop_current_amd64.deb
+    state: absent
