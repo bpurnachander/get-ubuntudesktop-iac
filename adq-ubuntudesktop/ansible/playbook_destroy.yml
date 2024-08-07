@@ -19,10 +19,10 @@
 
     - name: Remove Notepad++
       apt:
-        name: notepadqq
+        name: uninstall
         state: absent
       tags: 
-        - notepad++
+        - uninstall
 
     - name: Remove Tomcat
       apt:
@@ -37,6 +37,3 @@
         state: absent
       tags: 
         - ubuntudesktop
-    - name: Apply python Installation
-      role: uninstall
-      tags: uninstall
