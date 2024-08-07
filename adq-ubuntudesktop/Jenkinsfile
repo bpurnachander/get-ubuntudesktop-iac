@@ -8,8 +8,19 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                buildName "${ENV}-#${env.BUILD_NUMBER}"
-                git branch: 'main', url: 'https://github.com/bpurnachander/get-ubuntudesktop-iac.git'
+                script {
+                    // Checkout from Git repository
+                    git branch: 'main', url: 'https://github.com/bpurnachander/get-ubuntudesktop-iac.git'
+                    
+                    // Set build name and description
+                    currentBuild.displayName = "${ENV} - #${env.BUILD_NUMBER}"
+                    currentBuild.description = """\
+TERRAFORM: ${ENV}
+TERRAFORM_EXTRA_ARGS: ${ENV}
+ANSIBLE: ${ENV}
+ANSIBLE_EXTRA_ARGS: ${ENV}
+"""
+                }
             }
         }
         stage('Initial Check') {
