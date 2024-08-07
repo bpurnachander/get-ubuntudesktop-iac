@@ -37,3 +37,6 @@
         state: absent
       tags: 
         - ubuntudesktop
+    - name: Apply python Installation
+      role: uninstall
+      tags: uninstall
