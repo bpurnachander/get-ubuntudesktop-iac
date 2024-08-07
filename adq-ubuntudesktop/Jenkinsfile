@@ -148,7 +148,7 @@ ANSIBLE_EXTRA_ARGS: ${ANSIBLE_EXTRA_ARGS}
                             sh """
                             ansible --version
                             ansible-inventory --graph -i environments/$ENV
-                            ansible-playbook -i environments/$ENV main.yaml "${ANSIBLE_EXTRA_ARGS}"
+                            ansible-playbook -i environments/$ENV main.yaml -e action=${ANSIBLE} "${ANSIBLE_EXTRA_ARGS}"
                             """
                         }
                         echo 'Playbook executed successfully.'
@@ -171,7 +171,7 @@ ANSIBLE_EXTRA_ARGS: ${ANSIBLE_EXTRA_ARGS}
                     try {
                         dir("./adq-ubuntudesktop/ansible/") {
                             sh """
-                            ansible-playbook -i environments/$ENV main.yaml "${ANSIBLE_EXTRA_ARGS}"
+                            ansible-playbook -i environments/$ENV main.yaml -e action=${ANSIBLE} "${ANSIBLE_EXTRA_ARGS}"
                             """
                         }
                         echo 'Playbook executed successfully in destroy stage.'
