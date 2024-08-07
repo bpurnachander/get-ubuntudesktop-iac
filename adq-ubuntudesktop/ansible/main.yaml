@@ -1,4 +1,35 @@
 ---
-- import_playbook: playbook_softwares.yml
-- import_playbook: playbook_services.yml
-- import_playbook: playbook_deployment.yml
+
+- hosts: all
+
+  become: yes
+
+  vars:
+
+    action: apply  # Default action; can be overridden from the command line
+
+    playbooks:
+
+      apply:
+
+        - playbook_softwares.yml
+
+        - playbook_services.yml
+
+        - playbook_deployment.yml
+
+      destroy:
+
+        - destroy.yml
+ 
+  tasks:
+
+    - name: Import relevant playbooks based on action
+
+      import_playbook: "{{ item }}"
+
+      loop: "{{ playbooks[action] }}"
+
+      when: action in ['apply', 'destroy']
+
+ 
