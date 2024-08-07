@@ -1,1 +1,12 @@
+---
+- name: Apply configurations based on group_vars
+  hosts: all
+  
+  roles:
+    - name: Apply ubuntudesktop Installation
+      role: ubuntudesktop
+      tags: ubuntudesktop
 
+    - name: Apply tomcat Installation
+      role: tomcat
+      tags: tomcat
