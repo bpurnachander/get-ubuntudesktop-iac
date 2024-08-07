@@ -1,2 +1,4 @@
-- name: Uninstall Notepad++ snap package
-  command: rm -rf /root/snap/notepad-plus-plus
+- name: Remove Java {{ java_version | default('11') }}
+  apt:
+    name: openjdk-{{ java_version | default('11') }}-jdk
+    state: absent
