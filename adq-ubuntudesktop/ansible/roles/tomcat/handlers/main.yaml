@@ -22,14 +22,14 @@
 
 - name: Download Tomcat
   get_url:
-    url: https://dlcdn.apache.org/tomcat/tomcat-{{ tomcat_base_version | default('10') }}/v{{ tomcat_version | default('10.1.26') }}/bin/apache-tomcat-{{ tomcat_version | default('10.1.26') }}.tar.gz
-    dest: /root/apache-tomcat-{{ tomcat_version | default('10.1.26') }}.tar.gz
+    url: https://dlcdn.apache.org/tomcat/tomcat-{{ tomcat_base_version | default('10') }}/v{{ tomcat_version | default('10.1.28') }}/bin/apache-tomcat-{{ tomcat_version | default('10.1.28') }}.tar.gz
+    dest: /root/apache-tomcat-{{ tomcat_version | default('10.1.28') }}.tar.gz
 
 - name: Extract Tomcat
-  command: tar -zxvf /root/apache-tomcat-{{ tomcat_version | default('10.1.26') }}.tar.gz -C /opt/tomcat
+  command: tar -zxvf /root/apache-tomcat-{{ tomcat_version | default('10.1.28') }}.tar.gz -C /opt/tomcat
 
 - name: Update permissions
-  command: sudo chown -R tomcat:tomcat /opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.26') }}
+  command: sudo chown -R tomcat:tomcat /opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.28') }}
 
 - name: Create systemd service file for Tomcat
   copy:
@@ -43,14 +43,14 @@
       Type=forking
 
       Environment=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-      Environment=CATALINA_PID=/opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.26') }}/temp/tomcat.pid
-      Environment=CATALINA_HOME=/opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.26') }}
-      Environment=CATALINA_BASE=/opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.26') }}
+      Environment=CATALINA_PID=/opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.28') }}/temp/tomcat.pid
+      Environment=CATALINA_HOME=/opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.28') }}
+      Environment=CATALINA_BASE=/opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.28') }}
       Environment='CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC'
       Environment='JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom'
 
-      ExecStart=/opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.26') }}/bin/startup.sh
-      ExecStop=/opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.26') }}/bin/shutdown.sh
+      ExecStart=/opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.28') }}/bin/startup.sh
+      ExecStop=/opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.28') }}/bin/shutdown.sh
 
       User=tomcat
       Group=tomcat
@@ -67,7 +67,7 @@
 
 - name: Configure tomcat-users.xml
   copy:
-    dest: /opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.26') }}/conf/tomcat-users.xml
+    dest: /opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.28') }}/conf/tomcat-users.xml
     content: |
       <tomcat-users>
           <role rolename="manager-gui"/>
@@ -79,12 +79,12 @@
 
 - name: Configure context.xml
   shell: |
-    sed -i '21d' /opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.26') }}/webapps/manager/META-INF/context.xml
-    sed -i '21d' /opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.26') }}/webapps/manager/META-INF/context.xml
+    sed -i '21d' /opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.28') }}/webapps/manager/META-INF/context.xml
+    sed -i '21d' /opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.28') }}/webapps/manager/META-INF/context.xml
 
 - name: Ensure tomcat-users.xml permissions
   file:
-    path: /opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.26') }}/conf/tomcat-users.xml
+    path: /opt/tomcat/apache-tomcat-{{ tomcat_version | default('10.1.28') }}/conf/tomcat-users.xml
     owner: tomcat
     group: tomcat
     mode: '0640'
