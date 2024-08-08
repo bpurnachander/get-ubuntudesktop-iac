@@ -6,34 +6,20 @@
     - name: Apply Java for destroy
       role: java-d
       tags: java-d
+      
     - name: Apply tomcat for destroy
       role: tomcat-d
       tags: tomcat-d
-
-    # - name: Remove Python
-    #   apt:
-    #     name: python3
-    #     state: absent
-    #   tags: 
-    #     - python
-
-    # - name: Remove Notepad++
-    #   apt:
-    #     name: uninstall
-    #     state: absent
-    #   tags: 
-    #     - uninstall
-
-    # - name: Remove Tomcat
-    #   apt:
-    #     name: tomcat10
-    #     state: absent
-    #   tags: 
-    #     - tomcat
-
-    # - name: Remove Ubuntu Desktop Environment
-    #   apt:
-    #     name: ubuntu-desktop
-    #     state: absent
-    #   tags: 
-    #     - ubuntudesktop
+      
+    - name: Apply notepad++ for destroy
+      role: notepad-d
+      tags: notepad-d
+      
+    - name: Apply python for destroy
+      role: python-d
+      tags: python-d
+      
+    - name: Apply ubuntudesktop for destroy
+      role: ubuntudesktop-d
+      tags: ubuntudesktop-d
+      
