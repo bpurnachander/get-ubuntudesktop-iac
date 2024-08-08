@@ -4,6 +4,7 @@ pipeline {
     }
     environment {
         GCP_CREDENTIALS = credentials('SVC_JSON_DEV')
+        ADMIN_EMAIL = 'getadqdevops@gmail.com'
     }
     stages {
         stage('Checkout') {
@@ -38,12 +39,8 @@ ANSIBLE_EXTRA_ARGS: ${ANSIBLE_EXTRA_ARGS}
             }
             steps {
                 script {
-                    
                     def destPath = "${env.WORKSPACE}/service-account.json"
-
-                    // Write the secret file to the destination path on the agent
                     writeFile file: destPath, text: new String(readFile(env.GCP_CREDENTIALS).bytes)
-
                     sh """
                     sudo cp ${env.WORKSPACE}/adq-ubuntudesktop/ansible/ansible.cfg /etc/ansible/ansible.cfg
                     """
@@ -58,13 +55,31 @@ ANSIBLE_EXTRA_ARGS: ${ANSIBLE_EXTRA_ARGS}
             }
             steps {
                 dir("./adq-ubuntudesktop/terraform/environments/${ENV}") {
-                    
                     sh """
-                    
                     terraform init
                     terraform plan ${TERRAFORM_EXTRA_ARGS}
-                    
                     """
+                }
+            }
+        }
+        stage('Request Approval for Terraform Apply') {
+            when {
+                expression {
+                    return terraform == 'apply'
+                }
+            }
+            steps {
+                script {
+                    emailext (
+                        subject: "Approval Needed: Terraform Apply",
+                        body: """
+                            <p>Please approve the execution of the Terraform Apply stage.</p>
+                            <p>Click <a href="${env.BUILD_URL}">here</a> to view the build details and provide approval.</p>
+                        """,
+                        mimeType: 'text/html',
+                        to: "${env.ADMIN_EMAIL}"
+                    )
+                    echo 'Approval email sent. Awaiting manual approval...'
                 }
             }
         }
@@ -75,40 +90,87 @@ ANSIBLE_EXTRA_ARGS: ${ANSIBLE_EXTRA_ARGS}
                 }
             }
             steps {
-                dir("./adq-ubuntudesktop/terraform/environments/${ENV}") {
-                    script {
-                        def tfState = sh(script: """
-                            terraform state list
-                    """, returnStdout: true).trim()
-
-                        if (tfState) {
-                            echo 'Existing Terraform state found.'
-                            def userInput = input message: 'Existing resources found. Do you want to recreate the infrastructure?', ok: 'Apply', parameters: [choice(name: 'Confirm', choices: 'yes\nno', description: 'Choose yes to recreate or no to abort')]
-
-                            if (userInput == 'yes') {
-                                
+                script {
+                    def userInput = input(
+                        id: 'userInput', message: 'Approve Terraform Apply?', parameters: [
+                            [$class: 'BooleanParameterDefinition', defaultValue: true, description: 'Approve to proceed?', name: 'Proceed']
+                        ]
+                    )
+                    if (userInput) {
+                        dir("./adq-ubuntudesktop/terraform/environments/${ENV}") {
+                            def tfState = sh(script: "terraform state list", returnStdout: true).trim()
+                            if (tfState) {
+                                echo 'Existing Terraform state found.'
+                                emailext (
+                                    subject: "Approval Needed: Recreate Terraform Infrastructure",
+                                    body: """
+                                        <p>Existing resources found. Do you want to recreate the infrastructure?</p>
+                                        <p>Click <a href="${env.BUILD_URL}">here</a> to view the build details and provide approval.</p>
+                                    """,
+                                    mimeType: 'text/html',
+                                    to: "${env.ADMIN_EMAIL}"
+                                )
+                                def userInputRecreate = input(
+                                    id: 'userInputRecreate', message: 'Existing resources found. Do you want to recreate the infrastructure?', parameters: [
+                                        [$class: 'BooleanParameterDefinition', defaultValue: true, description: 'Approve to recreate?', name: 'Proceed']
+                                    ]
+                                )
+                                if (userInputRecreate) {
+                                    sh """
+                                    terraform init
+                                    terraform apply --auto-approve ${TERRAFORM_EXTRA_ARGS}
+                                    """
+                                } else {
+                                    echo 'Aborted by user.'
+                                    currentBuild.result = 'ABORTED'
+                                    emailext (
+                                        subject: "Approval Denied: Recreate Terraform Infrastructure",
+                                        body: "The stage to recreate Terraform infrastructure has been denied and will not be executed.",
+                                        mimeType: 'text/html',
+                                        to: "${env.ADMIN_EMAIL}"
+                                    )
+                                    error('User chose not to recreate infrastructure.')
+                                }
+                            } else {
+                                echo 'No existing resources found. Applying Terraform.'
                                 sh """
-                                
                                 terraform init
                                 terraform apply --auto-approve ${TERRAFORM_EXTRA_ARGS}
-                                
                                 """
-                            } else {
-                                echo 'Aborted by user.'
-                                currentBuild.result = 'ABORTED'
-                                error('User chose not to recreate infrastructure.')
                             }
-                        } else {
-                            echo 'No existing resources found. Applying Terraform.'
-                            
-                            sh """
-                            
-                            terraform init
-                            terraform apply --auto-approve ${TERRAFORM_EXTRA_ARGS}
-                            
-                            """
                         }
+                    } else {
+                        echo 'Aborted by user.'
+                        currentBuild.result = 'ABORTED'
+                        emailext (
+                            subject: "Approval Denied: Terraform Apply",
+                            body: "The stage to apply Terraform has been denied and will not be executed.",
+                            mimeType: 'text/html',
+                            to: "${env.ADMIN_EMAIL}"
+                        )
+                        error('User aborted the stage.')
                     }
+                }
+            }
+        }
+        stage('Request Approval for Terraform Destroy') {
+            when {
+                expression {
+                    return terraform == 'destroy'
+                }
+            }
+            steps {
+                script {
+                    emailext (
+                        subject: "Approval Needed: Terraform Destroy",
+                        body: """
+                            <p>Please approve the execution of the Terraform Destroy stage.</p>
+                            <p>Click <a href="${env.BUILD_URL}">here</a> to view the build details and provide approval.</p>
+                        """,
+                        mimeType: 'text/html',
+                        to: "${env.ADMIN_EMAIL}"
+                    )
+                    echo 'Approval email sent. Awaiting manual approval...'
                 }
             }
         }
@@ -119,18 +181,52 @@ ANSIBLE_EXTRA_ARGS: ${ANSIBLE_EXTRA_ARGS}
                 }
             }
             steps {
-                dir("./adq-ubuntudesktop/terraform/environments/${ENV}") {
-                    
-                    script {
-                        input message: 'Are you sure you want to destroy the infrastructure?', ok: 'Yes'
+                script {
+                    def userInput = input(
+                        id: 'userInput', message: 'Approve Terraform Destroy?', parameters: [
+                            [$class: 'BooleanParameterDefinition', defaultValue: true, description: 'Approve to proceed?', name: 'Proceed']
+                        ]
+                    )
+                    if (userInput) {
+                        dir("./adq-ubuntudesktop/terraform/environments/${ENV}") {
+                            input message: 'Are you sure you want to destroy the infrastructure?', ok: 'Yes'
+                            sh """
+                            terraform init
+                            terraform destroy --auto-approve ${TERRAFORM_EXTRA_ARGS}
+                            """
+                        }
+                    } else {
+                        echo 'Aborted by user.'
+                        currentBuild.result = 'ABORTED'
+                        emailext (
+                            subject: "Approval Denied: Terraform Destroy",
+                            body: "The stage to destroy Terraform has been denied and will not be executed.",
+                            mimeType: 'text/html',
+                            to: "${env.ADMIN_EMAIL}"
+                        )
+                        error('User aborted the stage.')
                     }
-                    
-                    sh """
-                    
-                    terraform init
-                    terraform destroy --auto-approve ${TERRAFORM_EXTRA_ARGS}
-                    
-                    """
+                }
+            }
+        }
+        stage('Request Approval for Ansible Apply') {
+            when {
+                expression {
+                    return ANSIBLE == 'apply'
+                }
+            }
+            steps {
+                script {
+                    emailext (
+                        subject: "Approval Needed: Ansible Apply",
+                        body: """
+                            <p>Please approve the execution of the Ansible Apply stage.</p>
+                            <p>Click <a href="${env.BUILD_URL}">here</a> to view the build details and provide approval.</p>
+                        """,
+                        mimeType: 'text/html',
+                        to: "${env.ADMIN_EMAIL}"
+                    )
+                    echo 'Approval email sent. Awaiting manual approval...'
                 }
             }
         }
@@ -142,24 +238,51 @@ ANSIBLE_EXTRA_ARGS: ${ANSIBLE_EXTRA_ARGS}
             }
             steps {
                 script {
-                    try {
-                        // sleep(time: 30, unit: 'SECONDS')
-                        dir("./adq-ubuntudesktop/ansible/") {
-                            sh """
-                            ansible --version
-                            ansible-inventory --graph -i environments/$ENV
-                            ansible-playbook -i environments/$ENV main.yaml "${ANSIBLE_EXTRA_ARGS}"
-                            """
+                    def userInput = input(
+                        id: 'userInput', message: 'Approve Ansible Apply?', parameters: [
+                            [$class: 'BooleanParameterDefinition', defaultValue: true, description: 'Approve to proceed?', name: 'Proceed']
+                        ]
+                    )
+                    if (userInput) {
+                        try {
+                            dir("./adq-ubuntudesktop/ansible/") {
+                                sh """
+                                ansible --version
+                                ansible-inventory --graph -i environments/$ENV
+                                ansible-playbook -i environments/$ENV main.yaml "${ANSIBLE_EXTRA_ARGS}"
+                                """
+                            }
+                            echo 'Playbook executed successfully.'
+                            emailext (
+                                subject: "Approval Granted: Ansible Apply",
+                                body: "The stage to apply Ansible has been approved and executed.",
+                                mimeType: 'text/html',
+                                to: "${env.ADMIN_EMAIL}"
+                            )
+                        } catch (Exception e) {
+                            echo 'Playbook execution failed.'
+                            currentBuild.result = 'FAILURE'
+                            emailext (
+                                subject: "Execution Failed: Ansible Apply",
+                                body: "The stage to apply Ansible has failed.",
+                                mimeType: 'text/html',
+                                to: "${env.ADMIN_EMAIL}"
+                            )
                         }
-                        echo 'Playbook executed successfully.'
-                    } catch (Exception e) {
-                        echo 'Playbook execution failed.'
-                        currentBuild.result = 'FAILURE'
+                    } else {
+                        echo 'Aborted by user.'
+                        currentBuild.result = 'ABORTED'
+                        emailext (
+                            subject: "Approval Denied: Ansible Apply",
+                            body: "The stage to apply Ansible has been denied and will not be executed.",
+                            mimeType: 'text/html',
+                            to: "${env.ADMIN_EMAIL}"
+                        )
+                        error('User aborted the stage.')
                     }
                 }
             }
         }
-
         stage('Playbook_destroy') {
             when {
                 expression {
