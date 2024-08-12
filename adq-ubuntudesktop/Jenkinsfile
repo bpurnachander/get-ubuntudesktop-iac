@@ -10,7 +10,12 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    git branch: 'main', url: 'https://github.com/bpurnachander/get-ubuntudesktop-iac.git'
+                    def gitInfo = checkout([$class: 'GitSCM',
+                        branches: [[name: "*/${BRANCH_NAME}"]],
+                        userRemoteConfigs: [[url: 'https://github.com/bpurnachander/get-ubuntudesktop-iac.git']]
+                    ])
+                    def branchName = gitInfo.GIT_BRANCH.tokenize('/')[1]
+                    echo "Branch name: ${branchName}"
                     
                     currentBuild.displayName = "ENV: ${ENV} - #${env.BUILD_NUMBER}"
                     currentBuild.description = """\
