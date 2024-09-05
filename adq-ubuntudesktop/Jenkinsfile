@@ -299,7 +299,7 @@ ANSIBLE_EXTRA_ARGS: ${ANSIBLE_EXTRA_ARGS}
                     try {
                         dir("./adq-ubuntudesktop/ansible/") {
                             sh """
-                             ansible-playbook -i environments/$ENV main.yaml -e "${ANSIBLE_EXTRA_ARGS}"
+                             ansible-playbook -i environments/$ENV main.yaml "${ANSIBLE_EXTRA_ARGS}"
                             """
                         }
                         echo 'Playbook executed successfully in destroy stage.'
